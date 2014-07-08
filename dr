@@ -7,15 +7,16 @@ files=()
 
 # Prints the usage
 usage () {
-    echo "$0 [pvrf]"
+    echo "$0 [pvhrf]"
     echo "      -p  Permanatly deletes file"
     echo "      -v  Verbose output"
     echo "      -r  Recusivly remove files"
     echo "      -f  Force remove files"
+    echo "      -h  Print usage"
 }
 
 # Get command line options
-while getopts pvrf option
+while getopts pvhrf option
 do
     case "${option}"
     in
@@ -23,6 +24,7 @@ do
         v) verb=v;;
         r) recursive=r;;
         f) force=f;;
+        h) usage;;
         *) usage;;
     esac
 done
