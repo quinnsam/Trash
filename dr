@@ -48,7 +48,7 @@ do
             rm "$DEL"
         fi
     else
-        mv "$DEL" ~/.Trash/"$DEL"
+        mv "$DEL" ~/.Trash/"${DEL##*/}"
         if [ "$verb" == 'v' ]
         then
             echo "Deleting: $DEL"
