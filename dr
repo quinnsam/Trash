@@ -4,19 +4,56 @@ perm=0
 recursive=''
 force='i'
 files=()
+clean=0
+del_time=0
 
 # Prints the usage
 usage () {
-    echo "$0 [pvhrf]"
+    echo "$0 [pvhrfc]"
     echo "      -p  Permanatly deletes file"
     echo "      -v  Verbose output"
     echo "      -r  Recusivly remove files"
     echo "      -f  Force remove files"
+    echo "      -c  Empty trash bin, A-all H- >hour D- >day M- >month"
     echo "      -h  Print usage"
 }
 
+clean_up () {
+    curr_time=`date -d now +%s`
+    echo "Current time: $curr_time"
+    if [ "$1" == 'A' ]
+    then
+        del_time=1596306279
+    elif [ "$1" == 'H' ]
+    then
+        del_time=$((curr_time-3600))
+    elif [ "$1" == 'D' ]
+    then
+        del_time=$((curr_time-86400))
+    elif [ "$1" == 'M' ]
+    then
+        del_time=$((curr_time-2628000))
+    fi
+
+    echo "Delete time: $del_time"
+    cd ~/.Trash
+    FILES=`ls -a ~/.Trash/`
+    for delete in $FILES
+    do
+        if [ "$delete" != '.' ] && [ "$delete" != '..' ]
+        then
+            file_stat=`stat -c %X $delete`
+            if [ $file_stat -lt $del_time ]
+            then
+                echo "REMOVING:$delete: $file_stat"
+                /bin/rm -rvf $delete
+            fi
+        fi
+    done 
+}
+    
 # Get command line options
-while getopts pvhrf option
+while getopts pvhrfc: option
 do
     case "${option}"
     in
@@ -24,6 +61,7 @@ do
         v) verb=v;;
         r) recursive=r;;
         f) force=f;;
+        c) clean_up ${OPTARG};;
         h) usage;;
         *) usage;;
     esac
@@ -43,11 +81,12 @@ do
     then
         if [[ "$verb" == 'v'  || "$force" == 'f' || "$recursive" == 'r' ]]
         then
-            rm -"$verb$recursive$force" "$DEL"
+            /bin/rm -"$verb$recursive$force" "$DEL"
         else
-            rm "$DEL"
+            /bin/rm "$DEL"
         fi
     else
+        touch -a "$DEL"
         mv "$DEL" ~/.Trash/"${DEL##*/}"
         if [ "$verb" == 'v' ]
         then
