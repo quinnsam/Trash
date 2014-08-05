@@ -86,7 +86,7 @@ do
             /bin/rm "$DEL"
         fi
     else
-        touch -a "$DEL"
+        touch -a "$DEL" > /dev/null 2>&1
         mv "$DEL" ~/.Trash/"${DEL##*/}"
         if [ "$verb" == 'v' ]
         then
